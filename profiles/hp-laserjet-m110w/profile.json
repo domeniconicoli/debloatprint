@@ -1,0 +1,119 @@
+{
+  "id": "hp-laserjet-m110w",
+  "family": "HP LaserJet M109-M112",
+  "models": ["HP LaserJet M110w", "HP LaserJet M109-M112"],
+  "reference": "Measured on an M110w in November 2026. The same embedded web server is shared by the M109-M112 family. Confirm the model with tools/probe.py before applying anything.",
+  "auth": {
+    "type": "http-basic",
+    "username": "admin",
+    "password": "The PIN printed on the label inside the toner door. The web page asks for a password and no username. The LEDM and CDM interfaces on this firmware require the username admin as well."
+  },
+  "never_touch": ["wifi0", "ipp", "airprint", "bonjour", "dhcp", "ipv4"],
+  "changes": [
+    {
+      "id": "wifi-direct",
+      "title": "Turn off Wi-Fi Direct",
+      "why": "The printer keeps a second radio, DIRECT-xx-HP M110 LaserJet. Phones sometimes pick that network instead of the home Wi-Fi.",
+      "risk": "low",
+      "needs_auth": false,
+      "request": {
+        "method": "PUT",
+        "url": "http://{host}/IoMgmt/Adapters/Wifi1",
+        "content_type": "text/xml",
+        "body": "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<io:Adapter xmlns:dd=\"http://www.hp.com/schemas/imaging/con/dictionaries/1.0/\" xmlns:io=\"http://www.hp.com/schemas/imaging/con/ledm/iomgmt/2008/11/30\">\n  <io:HardwareConfig>\n    <dd:Power>off</dd:Power>\n  </io:HardwareConfig>\n</io:Adapter>\n"
+      },
+      "expect": "HTTP 200. DirectPrint on /DevMgmt/NetAppsDyn.xml flips to disabled on its own.",
+      "verify": "Wifi1 power=off and Wifi0 still power=on and connected to the home SSID.",
+      "restore": "PUT the same body with <dd:Power>on</dd:Power>. Restore was not re-tested on the reference printer."
+    },
+    {
+      "id": "hp-cloud",
+      "title": "Remove the HP cloud registration",
+      "why": "HP Connected and the telemetry channel stay signed in and report a connection error, which adds a wait before a job starts.",
+      "risk": "medium",
+      "needs_auth": true,
+      "do_not": [
+        "Do not POST to /cdm/eventing/v1/subscriptions. An empty POST wedged the web server for several minutes on the reference printer.",
+        "Do not GET /cdm/deviceProvisioning/v1/printerFingerprint. It stalled.",
+        "Do not DELETE the seven telemetry subscriptions one by one. The item URL returns 404 and the collection returns 405. They stay listed after the registration is gone."
+      ],
+      "request": {
+        "method": "DELETE",
+        "url": "https://{host}/cdm/cloudServices/v1/avatarRegistration/registration"
+      },
+      "expect": "HTTP 204. A following GET of /cdm/cloudServices/v1/avatarRegistration has no registration object. The web page HP Web Services says Disabled.",
+      "verify": "cloudServicesEnabled can remain true. That flag is not the registration. Printing over IPP still works.",
+      "restore": "Use the Enable button on the printer web page under HP Web Services. This profile does not re-enroll the printer."
+    },
+    {
+      "id": "auto-off",
+      "title": "Stop the printer from powering off by itself",
+      "why": "After one hour it sleeps. After four more hours it shuts down, and a Wi-Fi job does not turn it back on. The next print needs the power button.",
+      "risk": "low",
+      "needs_auth": true,
+      "left_alone": "Power save stays on, timeout 1 hour. The first page after that hour still waits for the fuser. Turning power save off keeps the printer hot all day. That is a separate decision.",
+      "request": {
+        "method": "PUT",
+        "url": "https://{host}/DevMgmt/ProductConfigDyn.xml",
+        "content_type": "text/xml",
+        "body": "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<prdcfgdyn2:ProductConfigDyn xmlns:dd=\"http://www.hp.com/schemas/imaging/con/dictionaries/1.0/\" xmlns:prdcfgdyn2=\"http://www.hp.com/schemas/imaging/con/ledm/productconfigdyn/2009/03/16\">\n  <prdcfgdyn2:ProductSettings>\n    <dd:PowerSaveTimeout>1hour</dd:PowerSaveTimeout>\n    <prdcfgdyn2:ShutDownDelay>never</prdcfgdyn2:ShutDownDelay>\n    <prdcfgdyn2:ShutDownDelayApply>true</prdcfgdyn2:ShutDownDelayApply>\n  </prdcfgdyn2:ProductSettings>\n</prdcfgdyn2:ProductConfigDyn>\n"
+      },
+      "expect": "HTTP 200. Read back ShutDownDelay never.",
+      "verify": "IPP on port 631 still answers.",
+      "restore": "PUT the same body with ShutDownDelay set to 4hours."
+    },
+    {
+      "id": "ipv6-and-ipps",
+      "title": "Stop advertising IPv6 and secure AirPrint",
+      "why": "iOS tries the Bonjour name, then every IPv6 address, then IPPS on port 631. On this firmware the TLS handshake fails. Each failed attempt is added to the wait. Plain IPP to the IPv4 address answers in a fraction of a second.",
+      "risk": "medium",
+      "needs_auth": true,
+      "do_not": [
+        "An omitted checkbox is turned off. Resend every checkbox that must stay on, in the same POST.",
+        "Do not clear Bonjour, AirPrint, IPP, IPv4, or DHCP."
+      ],
+      "request": {
+        "method": "POST",
+        "url": "https://{host}/hp/device/set_config_networkAdvanced.html/config",
+        "content_type": "application/x-www-form-urlencoded",
+        "drop": ["IPv6_enable", "DHCPv6_enable", "IPPS_enable"],
+        "keep": [
+          "IPv4_enable",
+          "DHCP_enable",
+          "BOOTP_enable",
+          "AUTOIP_enable",
+          "Printing_9100_enable",
+          "FQDN_Enable",
+          "LLMNR_enable",
+          "SLP_enable",
+          "Bonjour_enable",
+          "AirPrint_enable",
+          "IPP_enable",
+          "WSDiscovery_enable",
+          "WSPrint_enable",
+          "LPD_enable",
+          "Syslog_enable"
+        ],
+        "also_send": {
+          "Is_WSPrint": "yes",
+          "Is_WSScan": "no",
+          "OrgWSPrint_enable": "1",
+          "WSPrint_enable": "on",
+          "SyslogServerIP": "Not Specified",
+          "previousSyslogServerIP": "Not Specified",
+          "SyslogPort": "514",
+          "SyslogMaxMsgPerMinute": "10",
+          "SyslogMaxPriority": "7",
+          "SyslogFacility": "LPR",
+          "SyslogProtocol": "UDP",
+          "networkInUse": "yes",
+          "apply_button": "Apply"
+        },
+        "checkbox_value": "on"
+      },
+      "expect": "HTTP 303 back to the Advanced page. IPv6_enable, DHCPv6_enable and IPPS_enable are not CHECKED. IPP, AirPrint, Bonjour and IPv4 still are.",
+      "verify": "The Bonjour name resolves to the IPv4 address only. _ipp._tcp is advertised. _ipps._tcp is not. A one-line print from the computer still finishes.",
+      "restore": "POST the same form again with IPv6_enable, DHCPv6_enable and IPPS_enable included. Restore was not re-tested on the reference printer."
+    }
+  ]
+}
