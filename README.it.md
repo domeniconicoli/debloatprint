@@ -20,7 +20,8 @@ Wi-Fi di casa, IPv4, DHCP, IPP, AirPrint e Bonjour. `tools/guard.py` rifiuta que
 
 ```bash
 python3 tools/probe.py --host 192.168.1.50
-python3 tools/probe.py --check ipp    # esce con codice 2
+python3 tools/probe.py --profiles     # ogni cartella in profiles/
+python3 tools/probe.py --check ipp    # esce con codice 2; rifiuta anche un nome presente in qualunque profilo
 python3 -m unittest discover -s tests
 ```
 

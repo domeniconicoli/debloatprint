@@ -35,7 +35,7 @@ Use the "Add a new printer" block from [PROMPT.md](../PROMPT.md). This is how a 
 4. You name which single change it may try.
 5. It sends that one request, keeps the status code, and checks that the printer is still on the home Wi-Fi and still accepts a local job.
 6. Only a request it actually sent is written into `profiles/<model-id>/profile.json`, next to a `README.md` in the same shape as the M110w profile. A restore it did not run is marked untested.
-7. It runs `python3 -m unittest discover -s tests`. Those tests refuse a change that would turn off home Wi-Fi, IPv4, DHCP, IPP, AirPrint, or Bonjour.
+7. It runs `python3 tools/probe.py --profiles` and `python3 -m unittest discover -s tests`. Those checks walk every folder in `profiles/` and refuse a change that would turn off home Wi-Fi, IPv4, DHCP, IPP, AirPrint, or Bonjour.
 
 When that folder exists, the next person with the same model uses the apply prompt instead of discovering it again.
 

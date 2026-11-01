@@ -21,6 +21,10 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 from guard import Refused, assert_allowed
 
 TIMEOUT = 8
+PROFILE_ROOT = Path(__file__).resolve().parents[1] / "profiles"
+# Names a profile must keep in never_touch. guard.FLOOR still blocks these,
+# plus mdns and infrastructure-wifi, even when a profile omits them.
+REQUIRED_NEVER_TOUCH = ("wifi0", "ipv4", "dhcp", "ipp", "airprint", "bonjour")
 
 
 def _local(tag: str) -> str:
@@ -168,25 +172,153 @@ def format_report(host: str, state: dict) -> str:
     return "\n".join(lines)
 
 
+def profile_paths(root: Path | None = None) -> list[Path]:
+    base = Path(root) if root is not None else PROFILE_ROOT
+    if not base.is_dir():
+        return []
+    return sorted(path for path in base.glob("*/profile.json") if path.is_file())
+
+
+def _never_touch(data: dict) -> list[str]:
+    names = data.get("never_touch")
+    if not isinstance(names, list):
+        return []
+    return [str(name).strip().lower() for name in names if str(name).strip()]
+
+
+def collected_never_touch(root: Path | None = None) -> list[str]:
+    """Never-touch names from every profile. Unreadable files are skipped."""
+    names: list[str] = []
+    for path in profile_paths(root):
+        try:
+            data = json.loads(path.read_text())
+        except (OSError, json.JSONDecodeError):
+            continue
+        if isinstance(data, dict):
+            names.extend(_never_touch(data))
+    return names
+
+
+def verify_profile(path: Path) -> list[str]:
+    """Problems in one profile. An empty list means it is safe to follow."""
+    folder = path.parent.name
+    try:
+        data = json.loads(path.read_text())
+    except json.JSONDecodeError as error:
+        return [f"{folder}: invalid JSON ({error.msg})"]
+    except OSError as error:
+        return [f"{folder}: {error.strerror}"]
+    if not isinstance(data, dict):
+        return [f"{folder}: profile must be a JSON object"]
+
+    problems: list[str] = []
+    if data.get("id") != folder:
+        problems.append(f"{folder}: id is {data.get('id')!r}, folder name is {folder!r}")
+
+    models = data.get("models")
+    if (
+        not isinstance(models, list)
+        or not models
+        or not all(isinstance(model, str) and model.strip() for model in models)
+    ):
+        problems.append(f"{folder}: models must be a non-empty list of names")
+
+    if not isinstance(data.get("never_touch"), list):
+        problems.append(f"{folder}: never_touch must be a list")
+        blocked: list[str] = []
+    else:
+        blocked = _never_touch(data)
+        missing = [name for name in REQUIRED_NEVER_TOUCH if name not in blocked]
+        if missing:
+            problems.append(f"{folder}: never_touch drops {', '.join(missing)}")
+
+    changes = data.get("changes")
+    if not isinstance(changes, list) or not changes:
+        problems.append(f"{folder}: changes must list at least one change")
+        return problems
+
+    seen: set[str] = set()
+    for change in changes:
+        if not isinstance(change, dict):
+            problems.append(f"{folder}: a change is not an object")
+            continue
+        change_id = str(change.get("id") or "").strip()
+        label = change_id or "(no id)"
+        if not change_id:
+            problems.append(f"{folder}: a change has no id")
+        elif change_id.lower() in seen:
+            problems.append(f"{folder}: duplicate change {change_id}")
+        else:
+            seen.add(change_id.lower())
+            try:
+                assert_allowed(change_id, blocked)
+            except Refused:
+                problems.append(f"{folder}: {change_id} is on the never-touch list")
+        for field in ("why", "risk", "verify", "restore"):
+            if not str(change.get(field) or "").strip():
+                problems.append(f"{folder}: {label} has no {field}")
+        request = change.get("request")
+        if (
+            not isinstance(request, dict)
+            or not str(request.get("method") or "").strip()
+            or not str(request.get("url") or "").strip()
+        ):
+            problems.append(f"{folder}: {label} has no request method and url")
+    return problems
+
+
+def verify_profiles(root: Path | None = None) -> list[str]:
+    paths = profile_paths(root)
+    if not paths:
+        return ["no profiles found"]
+    problems: list[str] = []
+    for path in paths:
+        problems.extend(verify_profile(path))
+    return problems
+
+
+def format_profile_report(root: Path | None = None) -> str:
+    lines = []
+    for path in profile_paths(root):
+        data = json.loads(path.read_text())
+        count = len(data.get("changes") or [])
+        lines.append(f"{data.get('id')}: {count} changes, never-touch ok")
+    return "\n".join(lines)
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description="Read printer debloat state. Changes nothing.")
     parser.add_argument("--host", help="printer IP or host name")
     parser.add_argument(
         "--check",
         metavar="CHANGE",
-        help="exit 2 when CHANGE is on the never-touch list",
+        help="exit 2 when CHANGE is on the floor or on any profile never-touch list",
+    )
+    parser.add_argument(
+        "--profiles",
+        action="store_true",
+        help="check every profiles/*/profile.json; does not contact a printer",
     )
     args = parser.parse_args(argv)
+    if args.profiles and (args.check or args.host):
+        parser.error("pass --profiles on its own")
+    if args.profiles:
+        problems = verify_profiles()
+        if problems:
+            print("\n".join(problems), file=sys.stderr)
+            return 1
+        print(format_profile_report())
+        return 0
     if args.check:
         try:
-            assert_allowed(args.check)
+            assert_allowed(args.check, collected_never_touch())
         except Refused as refusal:
             print(refusal, file=sys.stderr)
             return 2
         print(f"{args.check} is not on the never-touch list")
         return 0
     if not args.host:
-        parser.error("pass --host, or --check CHANGE")
+        parser.error("pass --host, --check CHANGE, or --profiles")
     try:
         state = read_printer(args.host)
     except urllib.error.URLError as error:

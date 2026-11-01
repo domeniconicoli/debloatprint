@@ -35,7 +35,7 @@ Usa il blocco "Add a new printer" da [PROMPT.md](../PROMPT.md). È così che nas
 4. Tu indichi l'unica modifica che può provare.
 5. Invia quella richiesta, conserva il codice di stato e controlla che la stampante sia ancora sulla Wi-Fi di casa e accetti un lavoro locale.
 6. In `profiles/<model-id>/profile.json` finisce solo una richiesta davvero inviata, insieme a un `README.md` con la stessa forma del profilo della M110w. Un ripristino non eseguito si segna come non provato.
-7. Esegue `python3 -m unittest discover -s tests`. Quei test rifiutano una modifica che spegnerebbe Wi-Fi di casa, IPv4, DHCP, IPP, AirPrint o Bonjour.
+7. Esegue `python3 tools/probe.py --profiles` e `python3 -m unittest discover -s tests`. Quei controlli passano ogni cartella in `profiles/` e rifiutano una modifica che spegnerebbe Wi-Fi di casa, IPv4, DHCP, IPP, AirPrint o Bonjour.
 
 Quando quella cartella c'è, chi ha lo stesso modello usa il prompt di applicazione, senza rifare la scoperta.
 

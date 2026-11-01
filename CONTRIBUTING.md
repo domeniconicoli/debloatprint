@@ -13,4 +13,6 @@ Do not send a profile for a model you have not had on the network. A copied requ
 
 By contributing you accept [DISCLAIMER.md](DISCLAIMER.md). Do not present a profile as approved or certified by the printer maker.
 
+Before you send the folder, run `python3 tools/probe.py --profiles`. It reads every `profiles/*/profile.json`, not only the one you just added.
+
 To have an assistant draft the folder with you, use the "Add a new printer" prompt in [PROMPT.md](PROMPT.md). The rules above still apply: a request that was not sent is not a profile.

@@ -20,7 +20,8 @@ Home Wi-Fi, IPv4, DHCP, IPP, AirPrint and Bonjour. `tools/guard.py` refuses thos
 
 ```bash
 python3 tools/probe.py --host 192.168.1.50
-python3 tools/probe.py --check ipp    # exits 2
+python3 tools/probe.py --profiles     # every folder under profiles/
+python3 tools/probe.py --check ipp    # exits 2; also refuses a name any profile lists
 python3 -m unittest discover -s tests
 ```
 

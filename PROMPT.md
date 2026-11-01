@@ -34,6 +34,6 @@ You are in the debloatprint repo, on a computer that can reach the printer. Docu
 4. Before each write, run `python3 tools/probe.py --check CHANGE_ID`. Exit code 2 means stop, even on a brand the probe cannot read.
 5. Try one change. Record the exact request, the status code, and the body you got back. Then check that the printer still answers on the home Wi-Fi and that a local print path still works. If the check fails, stop and write the restore you actually used.
 6. A change that was not sent does not go in `profile.json`. Mark any restore you did not run as untested.
-7. Write `profiles/<model-id>/profile.json` and `profiles/<model-id>/README.md` in the same shape as `profiles/hp-laserjet-m110w/`. Keep `never_touch`. Run `python3 -m unittest discover -s tests` and fix the profile if a new change id is on the never-touch floor.
+7. Write `profiles/<model-id>/profile.json` and `profiles/<model-id>/README.md` in the same shape as `profiles/hp-laserjet-m110w/`. Keep `never_touch`. Run `python3 tools/probe.py --profiles` and `python3 -m unittest discover -s tests`. Fix the profile if either check fails.
 8. Never POST an empty body to `/cdm/eventing/v1/subscriptions`. Never factory-reset the printer. Never print or store the PIN.
 ```
