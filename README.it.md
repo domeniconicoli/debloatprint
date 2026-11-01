@@ -23,3 +23,12 @@ python3 -m unittest discover -s tests
 ```
 
 Poi leggi `profiles/<modello>/profile.json` e [docs/safety.md](docs/safety.md). Una modifica alla volta, e si controlla `verify` prima della successiva.
+
+## Con Grok o un'altra AI
+
+Apri l'assistente nel clone, sulla stessa rete della stampante, e incolla un prompt da [PROMPT.md](PROMPT.md).
+
+- Stampante già in `profiles/`: il prompt "Apply a listed printer". L'assistente legge, ti mostra le modifiche e ne applica una sola dopo il tuo sì.
+- Stampante nuova: il prompt "Add a new printer". L'assistente propone un piano, prova solo la modifica che autorizzi, e scrive il profilo con le richieste davvero inviate.
+
+I passi, in italiano, sono in [docs/with-an-ai.it.md](docs/with-an-ai.it.md).

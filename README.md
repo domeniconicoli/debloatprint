@@ -28,6 +28,10 @@ The probe prints power-save, auto-off, Wi-Fi Direct, the cloud registration and 
 
 Read `profiles/<model>/profile.json` and [docs/safety.md](docs/safety.md). Do one change, then check the `verify` line before the next change. The advanced network form treats a missing checkbox as off, so the keep-list in the M110w profile is the whole request, not a suggestion.
 
+With Grok or another assistant that can run commands on the same network, paste the apply prompt. The steps are in [docs/with-an-ai.md](docs/with-an-ai.md).
+
 ## Add a printer
 
 Copy `profiles/hp-laserjet-m110w/` and replace every request with one you have run. A profile that was not tried on that model does not belong here. See [CONTRIBUTING.md](CONTRIBUTING.md).
+
+An assistant can do that discovery for you. Paste the "Add a new printer" prompt in [PROMPT.md](PROMPT.md) and follow [docs/with-an-ai.md](docs/with-an-ai.md). It may write a profile only from requests it actually sent.

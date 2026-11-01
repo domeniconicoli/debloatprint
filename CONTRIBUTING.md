@@ -10,3 +10,5 @@ The folder needs:
 - Keep the floor in `tools/guard.py`. A profile may add protected names. It must not drop home Wi-Fi, IPv4, DHCP, IPP, AirPrint or Bonjour.
 
 Do not send a profile for a model you have not had on the network. A copied request from a different brand is how a printer gets stranded.
+
+To have an assistant draft the folder with you, use the "Add a new printer" prompt in [PROMPT.md](PROMPT.md). The rules above still apply: a request that was not sent is not a profile.
