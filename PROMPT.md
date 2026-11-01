@@ -4,6 +4,8 @@ Paste one of these to Grok, Claude, Codex, or another assistant that can run com
 
 Answer in the user's language. Do not print the PIN, do not commit it, and do not put it in a profile.
 
+Before the first write, tell the user that the project is not affiliated with the printer maker and that a change can affect warranty, support, and any cloud subscription. Point them at DISCLAIMER.md. Wait for a yes. A yes to "do the debloat" is not that acceptance unless you have shown this.
+
 ## Apply a listed printer
 
 ```text

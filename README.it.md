@@ -6,6 +6,8 @@ Far stampare la stampante, e togliere il resto.
 
 Le stampanti non hanno un comando unico. HP, Brother ed Epson rispondono su pagine diverse. Una scrittura sbagliata le stacca dal Wi-Fi. Un profilo non è uno script universale.
 
+Il progetto non è affiliato ad alcun produttore. Usare un profilo può incidere su garanzia e assistenza. Prima di modificare una stampante leggi [DISCLAIMER.it.md](DISCLAIMER.it.md).
+
 ## Cosa si può cambiare
 
 Sonno, registrazione cloud, Wi-Fi Direct, IPv6, e l'annuncio di AirPrint cifrato quando il canale TLS non funziona. Il primo profilo è la HP LaserJet M110w (famiglia M109-M112).

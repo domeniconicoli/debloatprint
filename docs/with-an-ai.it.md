@@ -9,7 +9,7 @@ Le frasi da incollare sono in [PROMPT.md](../PROMPT.md). Questa pagina dice come
 1. Clona questo repo sul computer che parlerà con la stampante.
 2. Metti quel computer sulla stessa Wi-Fi della stampante. Una rete ospite che nasconde i dispositivi non funziona.
 3. Apri l'assistente in quel clone. In Grok è una sessione il cui spazio di lavoro è il repo. Vale lo stesso per qualunque assistente che lì possa eseguire `python3`.
-4. Leggi [safety.md](safety.md). Confermi tu ogni modifica. L'assistente non riceve un sì generico.
+4. Leggi [safety.md](safety.md) e [l'avviso su garanzia e responsabilità](../DISCLAIMER.it.md). Confermi tu ogni modifica. L'assistente non riceve un sì generico. Il progetto non è affiliato al produttore, e una modifica può incidere su garanzia e assistenza.
 
 Il PIN, quando un profilo lo chiede, è sull'etichetta dentro la stampante. Dallo all'assistente nella sessione, se un passo lo richiede. Non va messo in un file.
 

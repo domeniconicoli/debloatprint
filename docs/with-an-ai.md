@@ -9,7 +9,7 @@ The words to paste are in [PROMPT.md](../PROMPT.md). This page is how to use the
 1. Clone this repo on the computer that will talk to the printer.
 2. Put that computer on the same Wi-Fi as the printer. A guest network that hides devices from each other will not work.
 3. Open the assistant in that clone. In Grok, that is a session whose workspace is the repo. The same applies to any other assistant that can run `python3` there.
-4. Read [safety.md](safety.md). You confirm each change. The assistant does not get a blanket yes.
+4. Read [safety.md](safety.md) and [the disclaimer](../DISCLAIMER.md). You confirm each change. The assistant does not get a blanket yes. The project is not affiliated with the printer maker, and a change can affect warranty and support.
 
 The PIN, when a profile needs one, is on a label inside the printer. Tell it to the assistant in the session if a step asks. Do not put it in a file.
 

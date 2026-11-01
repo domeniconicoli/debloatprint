@@ -11,4 +11,6 @@ The folder needs:
 
 Do not send a profile for a model you have not had on the network. A copied request from a different brand is how a printer gets stranded.
 
+By contributing you accept [DISCLAIMER.md](DISCLAIMER.md). Do not present a profile as approved or certified by the printer maker.
+
 To have an assistant draft the folder with you, use the "Add a new printer" prompt in [PROMPT.md](PROMPT.md). The rules above still apply: a request that was not sent is not a profile.

@@ -6,6 +6,8 @@ Same idea as the Android TV debloat repos: one folder per model, a list of what 
 
 Printers do not have one shared switch the way a TV has `pm disable-user`. HP, Brother and Epson expose different pages. A wrong write can drop the printer off Wi-Fi. Profiles are not a universal script.
 
+This project is not affiliated with any printer maker. Using a profile can affect the manufacturer's warranty and support. Read [DISCLAIMER.md](DISCLAIMER.md) before you change a printer.
+
 ## What a profile is allowed to change
 
 Sleep, cloud registration, Wi-Fi Direct, IPv6, and a broken secure-AirPrint advertisement. The first profile is the HP LaserJet M110w (M109-M112 family), taken from a printer that was slow from an iPhone and signed in to HP's cloud.
