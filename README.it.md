@@ -35,3 +35,7 @@ Apri l'assistente nel clone, sulla stessa rete della stampante, e incolla un pro
 - Stampante nuova: il prompt "Add a new printer". L'assistente propone un piano, prova solo la modifica che autorizzi, e scrive il profilo con le richieste davvero inviate.
 
 I passi, in italiano, sono in [docs/with-an-ai.it.md](docs/with-an-ai.it.md).
+
+## Stampanti misurate senza profilo
+
+[Brother HL-L2350DW](docs/brother-hl-l2350dw.md) (in inglese): tempi, cosa espone, e perché non c'è un profilo.
