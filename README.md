@@ -33,6 +33,10 @@ Read `profiles/<model>/profile.json` and [docs/safety.md](docs/safety.md). Do on
 
 With Grok or another assistant that can run commands on the same network, paste the apply prompt. The steps are in [docs/with-an-ai.md](docs/with-an-ai.md).
 
+## Printers measured without a profile
+
+[Brother HL-L2350DW](docs/brother-hl-l2350dw.md): timings, what it exposes, and why no profile was written.
+
 ## Add a printer
 
 Copy `profiles/hp-laserjet-m110w/` and replace every request with one you have run. A profile that was not tried on that model does not belong here. See [CONTRIBUTING.md](CONTRIBUTING.md).
