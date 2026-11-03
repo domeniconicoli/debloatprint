@@ -29,7 +29,7 @@ You are in the debloatprint repo, on a computer that can reach the printer. Appl
 You are in the debloatprint repo, on a computer that can reach the printer. Document this printer as a new profile. Do not copy requests from another model.
 
 1. Find the printer on the local network. Ask before scanning anything outside the user's LAN.
-2. Read only. Run `python3 tools/probe.py --host HOST` when the printer is an HP that speaks LEDM. If the probe fails, do not retry those HP URLs against another brand. Open the printer's own web page and record the model, the firmware string, and which menus exist for cloud, Wi-Fi Direct, sleep, IPv6, and secure printing.
+2. Read only. If README.md lists this model under "Printers measured without a profile", read that note first and do not repeat its tests. Run `python3 tools/probe.py --host HOST` when the printer is an HP that speaks LEDM. If the probe fails, do not retry those HP URLs against another brand. Open the printer's own web page and record the model, the firmware string, and which menus exist for cloud, Wi-Fi Direct, sleep, IPv6, and secure printing.
 3. Show a plan: what you would turn off, what you will not touch, and the risk of each change. The never-touch floor is home Wi-Fi, IPv4, DHCP, IPP, AirPrint, and Bonjour. Wait for a yes that names which changes to try.
 4. Before each write, run `python3 tools/probe.py --check CHANGE_ID`. Exit code 2 means stop, even on a brand the probe cannot read.
 5. Try one change. Record the exact request, the status code, and the body you got back. Then check that the printer still answers on the home Wi-Fi and that a local print path still works. If the check fails, stop and write the restore you actually used.
